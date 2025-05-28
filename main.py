@@ -50,7 +50,12 @@ def handle_voice_input(audio_path):
         ]
     )
     answer = response.choices[0].message.content.strip()
-    return answer
+    return f"""
+### 🔍 탐정의 대답
+<div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">
+{answer}
+</div>
+"""
 
 # 이미지 분류 및 설명 함수
 def classify_and_explain(image):
@@ -97,8 +102,16 @@ def classify_and_explain(image):
         ]
     )
     explanation = completion.choices[0].message.content.strip()
-    return top_result_kor, f"{explanation}\n\n👍 환경을 생각하는 멋진 선택이에요 🌱"
+    return f""" 
+    ### 🔍 탐정의 대답
+    <div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{top_result_kor}</div>
+    """,f"""
+### ♻️이렇게 버려요!
+<div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{explanation}\n\n👍 환경을 생각하는 멋진 선택이에요 🌱</div>"""
 
+#마크다운
+def process_text(text):
+    return f"### 결과입니다\n- 입력: **{text}**\n- 처리 완료!"
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -310,7 +323,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     display: flex;
     align-items: center; 
     justify-content: center;
-    font-size: 15px;
+    font-size: 20px;
     font-weight: bold;
     color: white;
     white-space: normal;  
@@ -398,7 +411,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 700px;
+    min-height: 630px;
 }
 
 .tool-section h3 {
@@ -418,6 +431,15 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     margin-top: 16px;
     width: 100%;
     max-width: 400px;
+}
+               
+ #answer-box {
+        border: 1px solid #D8D8DA;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 16px;
+        white-space: pre-wrap;
+        min-height: 100px;
 }
 
 """) as demo:
@@ -490,18 +512,18 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                 with gr.Column(elem_classes="tool-section"):
                     gr.HTML("<h3>🎤 말로 물어보세요!</h3>")
                     voice_input = gr.Microphone(label="", type="filepath")
-                    voice_output = gr.Textbox(label="AI의 대답", interactive=False)
+                    voice_output = gr.Markdown(label="", elem_id="answer-box")
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
                     gr.HTML("<h3>📷 사진을 올려보세요!</h3>")
                     image_input = gr.Image(label="", type="pil")
-                    result = gr.Textbox(label="결과", interactive=False)
-                    howto = gr.Textbox(label="이렇게 버려요!", lines=4, interactive=False)
+                    result = gr.Markdown(label="결과", elem_id="answer-box")
+                    howto = gr.Markdown(label="이렇게 버려요!", elem_id="answer-box")
 
 
         def good_selected():
             return (
-                gr.update(value="<div style='font-size: 26px;'>좋은 생각이야! AI에게 물어보자!</div>", visible=True),
+                gr.update(value="<div style='font-size: 26px;'>💡 좋은 생각이야! 탐정에게 물어보자!</div>", visible=True),
                 gr.update(visible=True)
             )
 
