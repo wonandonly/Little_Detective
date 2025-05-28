@@ -64,7 +64,12 @@ def classify_and_explain(image):
     }
     url = f"{CUSTOM_VISION_ENDPOINT}/customvision/v3.0/Prediction/{CUSTOM_VISION_PROJECT_ID}/classify/iterations/{CUSTOM_VISION_ITERATION_NAME}/image"
     response = requests.post(url, headers=headers, data=img_data)
-    predictions = response.json()["predictions"]
+    try:
+        predictions = response.json()["predictions"]
+        if not predictions:
+            return "이미지를 인식할 수 없어요. 다시 시도해 주세요."
+    except (KeyError, ValueError):
+        return "이미지 분석 중 오류가 발생했어요."
     top_result = predictions[0]["tagName"]
 
     # ✅ 영어 태그 → 한글 설명 매핑
