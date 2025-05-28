@@ -323,7 +323,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     display: flex;
     align-items: center; 
     justify-content: center;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     color: white;
     white-space: normal;  
@@ -332,6 +332,15 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     cursor: pointer;
     line-height: 1.4;    
 }
+
+.bubble-text{
+    color: white;
+}
+.bubble-text:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+      
 .left-bubble {
     background-color: #00aaff !important;
     color: white;
@@ -360,6 +369,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     border-bottom: 10px solid transparent;
     border-left: 14px solid #ff3344;
 }
+               
 .right-msg {
     background-color: #ff3344;
     color: white;
@@ -488,13 +498,13 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                 <img src="/static/good.png" class="character-img" />
             </div>
             <button class="speech-bubble left-bubble" onclick="document.querySelector('#good-button').click()">
-                분리수거 잘하면<br>지구가 깨끗해져요~!
+                <span class="bubble-text">분리수거 잘하면<br>지구가 깨끗해져요~!</span>
             </button>
         </div>
 
         <div class="choice-bubble">
             <button class="speech-bubble right-bubble" onclick="document.querySelector('#bad-button').click()">
-                그냥 다 한꺼번에 버려~<br>귀찮잖아!
+                <span class="bubble-text">그냥 다 한꺼번에 버려~<br>귀찮잖아!</span>
             </button>
             <div class="character-wrapper">
                 <div class="character-hover-msg">정말 나를 선택할 거야...? 지구가 아파요 🥲</div>
