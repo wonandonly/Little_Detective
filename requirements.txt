@@ -1,0 +1,8 @@
+gradio>=4.0
+openai
+requests
+speechrecognition
+fastapi
+uvicorn
+python-dotenv
+python-multipart
