@@ -387,6 +387,38 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     }
 
 }
+               
+.tool-section {
+    background-color: #ffffff;
+    border: 2px solid #d0f0c0;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 700px;
+}
+
+.tool-section h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-bottom: 16px;
+}
+
+.tool-section .gr-microphone,
+.tool-section .gr-image {
+    width: 100%;
+    max-width: 400px;
+}
+
+.tool-section .gr-textbox {
+    margin-top: 16px;
+    width: 100%;
+    max-width: 400px;
+}
 
 """) as demo:
 
@@ -455,27 +487,16 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
 
         with gr.Row(visible=False) as tools_row:
             with gr.Column():
-                gr.HTML("""
-                    <div style="background-color: #e0f7fa; border-radius: 16px; padding: 20px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <div style="text-align:center; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
-                            🎤 말로 물어보세요!
-                        </div>
-                    </div>
-                """)
-                voice_input = gr.Microphone(label="", type="filepath")
-                voice_output = gr.Textbox(label="AI의 대답", interactive=False)
-
+                with gr.Column(elem_classes="tool-section"):
+                    gr.HTML("<h3>🎤 말로 물어보세요!</h3>")
+                    voice_input = gr.Microphone(label="", type="filepath")
+                    voice_output = gr.Textbox(label="AI의 대답", interactive=False)
             with gr.Column():
-                gr.HTML("""
-                    <div style="background-color: #fde0f0; border-radius: 16px; padding: 20px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <div style="text-align:center; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
-                            📷 사진을 올려보세요!
-                        </div>
-                    </div>
-                """)
-                image_input = gr.Image(label="", type="pil")
-                result = gr.Textbox(label="결과", interactive=False)
-                howto = gr.Textbox(label="이렇게 버려요!", lines=4, interactive=False)
+                with gr.Column(elem_classes="tool-section"):
+                    gr.HTML("<h3>📷 사진을 올려보세요!</h3>")
+                    image_input = gr.Image(label="", type="pil")
+                    result = gr.Textbox(label="결과", interactive=False)
+                    howto = gr.Textbox(label="이렇게 버려요!", lines=4, interactive=False)
 
 
         def good_selected():
