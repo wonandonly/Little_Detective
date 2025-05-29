@@ -109,6 +109,7 @@ def classify_and_explain(image):
 ### ♻️이렇게 버려요!
 <div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{explanation}\n\n👍 환경을 생각하는 멋진 선택이에요 🌱</div>"""
 
+
 #마크다운
 def process_text(text):
     return f"### 결과입니다\n- 입력: **{text}**\n- 처리 완료!"
@@ -424,7 +425,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     min-height: 630px;
 }
 
-.tool-section h3 {
+.tool-section h2 {
     font-size: 20px;
     font-weight: bold;
     color: #2e7d32;
@@ -520,12 +521,12 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         with gr.Row(visible=False) as tools_row:
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h3>🎤 말로 물어보세요!</h3>")
+                    gr.HTML("<h2>🎤 말로 물어보세요!</h2>")
                     voice_input = gr.Microphone(label="", type="filepath")
                     voice_output = gr.Markdown(label="", elem_id="answer-box")
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><h3>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</h3>")
+                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><h3>사진을 찍을 때는 하나의 물건만 찍어주세요! \n <br>여러 개가 있으면 AI가 헷갈릴 수 있어요.😵‍💫</h3>")
                     image_input = gr.Image(label="", type="pil")
                     result = gr.Markdown(label="결과", elem_id="answer-box")
                     howto = gr.Markdown(label="이렇게 버려요!", elem_id="answer-box")
@@ -533,13 +534,13 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
 
         def good_selected():
             return (
-                gr.update(value="<div style='font-size: 26px;'>💡 좋은 생각이야! 탐정에게 물어보자!</div>", visible=True),
+                gr.update(value="<div style='font-size: 26px; font-weight: bold;'>💡 좋은 생각이야! ☺️ 탐정에게 물어보자!</div>", visible=True),
                 gr.update(visible=True)
             )
 
         def bad_selected():
             return (
-                gr.update(value="<div style='font-size: 26px;'>📚 그러면 안 돼! 분리수거를 같이 배워보자!", visible=True),
+                gr.update(value="<div style='font-size: 26px; font-weight: bold;'>📚 그러면 안 돼! ❌ 😵 분리수거를 같이 배워보자!</div>"),
                 gr.update(visible=True)
             )
 
@@ -558,4 +559,3 @@ app = gr.mount_gradio_app(app, demo, path="/")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=7860)
-
