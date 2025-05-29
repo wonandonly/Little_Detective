@@ -539,7 +539,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
 
         def bad_selected():
             return (
-                gr.update(value="<div style='font-size: 26px;'>📚 분리수거를 같이 배워보자!", visible=True),
+                gr.update(value="<div style='font-size: 26px;'>📚 그러면 안 돼! 분리수거를 같이 배워보자!", visible=True),
                 gr.update(visible=True)
             )
 
