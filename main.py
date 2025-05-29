@@ -45,7 +45,7 @@ def handle_voice_input(audio_path):
     response = client.chat.completions.create(
         model="a24-gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "친절한 분리수거 안내 도우미입니다."},
+            {"role": "system", "content": "친절한 분리수거 안내 도우미입니다. 어린이들을 대상으로 알려주는 거니까 이모티콘 많이 섞어서 답변해주세요."},
             {"role": "user", "content": user_text}
         ]
     )
@@ -92,7 +92,7 @@ def classify_and_explain(image):
     }
     top_result_kor = tag_kor_map.get(top_result, top_result)  # 없으면 그대로 사용
 
-    prompt = f"'{top_result_kor}'는 어떤 재활용 품목인가요? 어떻게 분리배출해야 하나요? 짧고 친절하게 설명해줘."
+    prompt = f"'{top_result_kor}'는 어떤 재활용 품목인가요? 어떻게 분리배출해야 하나요? 어린이를 대상으로 하는 거라 이모티콘도 많이 섞어서,친절하게 설명해주세요."
 
     completion = client.chat.completions.create(
         model="a24-gpt-4o-mini",
@@ -525,7 +525,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     voice_output = gr.Markdown(label="", elem_id="answer-box")
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h3>📷 사진을 올려보세요!</h3>")
+                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
                     image_input = gr.Image(label="", type="pil")
                     result = gr.Markdown(label="결과", elem_id="answer-box")
                     howto = gr.Markdown(label="이렇게 버려요!", elem_id="answer-box")
