@@ -12,6 +12,10 @@ import speech_recognition as sr
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 import os
+import tempfile
+from gtts import gTTS
+from playsound import playsound
+import uuid
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,6 +33,12 @@ CUSTOM_VISION_KEY = os.getenv("CUSTOM_VISION_KEY")
 CUSTOM_VISION_PROJECT_ID = os.getenv("CUSTOM_VISION_PROJECT_ID")
 CUSTOM_VISION_ITERATION_NAME = os.getenv("CUSTOM_VISION_ITERATION_NAME")
 
+# tts 기능
+def text_to_speech(text: str):
+    tmp_path = f"/tmp/{uuid.uuid4().hex}.mp3"
+    tts = gTTS(text, lang='ko')
+    tts.save(tmp_path)
+    return tmp_path
 
 # 음성 인식 함수
 def handle_voice_input(audio_path):
@@ -57,7 +67,6 @@ def handle_voice_input(audio_path):
 </div>
 """
 
-# 이미지 분류 및 설명 함수
 def classify_and_explain(image):
     image.save("temp.jpg")
     with open("temp.jpg", "rb") as f:
@@ -69,15 +78,16 @@ def classify_and_explain(image):
     }
     url = f"{CUSTOM_VISION_ENDPOINT}/customvision/v3.0/Prediction/{CUSTOM_VISION_PROJECT_ID}/classify/iterations/{CUSTOM_VISION_ITERATION_NAME}/image"
     response = requests.post(url, headers=headers, data=img_data)
+
     try:
         predictions = response.json()["predictions"]
         if not predictions:
-            return "이미지를 인식할 수 없어요. 다시 시도해 주세요."
+            return "이미지를 인식할 수 없어요. 다시 시도해 주세요.", "", None
     except (KeyError, ValueError):
-        return "이미지 분석 중 오류가 발생했어요."
+        return "이미지 분석 중 오류가 발생했어요.", "", None
+
     top_result = predictions[0]["tagName"]
 
-    # ✅ 영어 태그 → 한글 설명 매핑
     tag_kor_map = {
         'vinyl': '비닐류',
         'styrofoam': '스티로폼',
@@ -87,13 +97,12 @@ def classify_and_explain(image):
         'can': '캔류',
         'computer': '컴퓨터',
         'battery': '폐건전지',
-        'fluorescentlamp': '폐형광등',  # ✅ 정확한 key로 수정
+        'fluorescentlamp': '폐형광등',
         'plastic': '플라스틱류'
     }
-    top_result_kor = tag_kor_map.get(top_result, top_result)  # 없으면 그대로 사용
+    top_result_kor = tag_kor_map.get(top_result, top_result)
 
-    prompt = f"'{top_result_kor}'는 어떤 재활용 품목인가요? 어떻게 분리배출해야 하나요? 어린이를 대상으로 하는 거라 이모티콘도 많이 섞어서,친절하게 설명해주세요."
-
+    prompt = f"'{top_result_kor}'는 어떤 재활용 품목인가요? 어떻게 분리배출해야 하나요? 어린이를 위한 거니까 이모티콘 많이 섞어서, 친절하게 설명해줘."
     completion = client.chat.completions.create(
         model="a24-gpt-4o-mini",
         messages=[
@@ -102,12 +111,18 @@ def classify_and_explain(image):
         ]
     )
     explanation = completion.choices[0].message.content.strip()
-    return f""" 
-    ### 🔍 탐정의 대답
-    <div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{top_result_kor}</div>
-    """,f"""
-### ♻️이렇게 버려요!
-<div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{explanation}\n\n👍 환경을 생각하는 멋진 선택이에요 🌱</div>"""
+
+    # ✅ TTS mp3 경로 생성
+    mp3_path = text_to_speech(explanation)
+
+    # ✅ 텍스트 출력 + mp3 경로 전달
+    answer_text = f"""### 🔍 탐정의 대답  
+<div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{top_result_kor}</div>"""
+
+    explanation_text = f"""### ♻️이렇게 버려요!  
+<div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">{explanation}<br><br>👍 환경을 생각하는 멋진 선택이에요 🌱</div>"""
+
+    return answer_text, explanation_text, mp3_path
 
 
 #마크다운
@@ -526,11 +541,21 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     voice_output = gr.Markdown(label="", elem_id="answer-box")
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><h3>사진을 찍을 때는 하나의 물건만 찍어주세요! \n <br>여러 개가 있으면 AI가 헷갈릴 수 있어요.😵‍💫</h3>")
+
+                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
+                    # 이미지 입력
                     image_input = gr.Image(label="", type="pil")
+
+                    #텍스트 출력
                     result = gr.Markdown(label="결과", elem_id="answer-box")
                     howto = gr.Markdown(label="이렇게 버려요!", elem_id="answer-box")
 
+                     # ✅ 음성 재생용 추가
+                    play_button = gr.Button("▶️ 음성 재생")
+                    audio_output = gr.Audio()
+
+                    # ✅ 내부적으로 음성 경로 저장할 상태
+                    tts_path_state = gr.State()
 
         def good_selected():
             return (
@@ -551,7 +576,20 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         bad_button.click(fn=bad_selected, outputs=[ai_message, tools_row])
 
         voice_input.change(fn=handle_voice_input, inputs=voice_input, outputs=voice_output)
-        image_input.change(fn=classify_and_explain, inputs=image_input, outputs=[result, howto])
+
+        # 이미지 업로드 시 자동 실행
+        image_input.change(
+            fn=classify_and_explain,
+            inputs=image_input,
+            outputs=[result, howto, tts_path_state]
+        )
+
+        # 음성 재생 버튼 클릭 시 실행
+        play_button.click(
+            fn=lambda path: path,
+            inputs=tts_path_state,
+            outputs=audio_output
+        )
 
 # Gradio 앱 실행
 app = gr.mount_gradio_app(app, demo, path="/")
@@ -559,3 +597,4 @@ app = gr.mount_gradio_app(app, demo, path="/")
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=7860)
+
