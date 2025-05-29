@@ -525,7 +525,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     voice_output = gr.Markdown(label="", elem_id="answer-box")
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
+                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><h3>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</h3>")
                     image_input = gr.Image(label="", type="pil")
                     result = gr.Markdown(label="결과", elem_id="answer-box")
                     howto = gr.Markdown(label="이렇게 버려요!", elem_id="answer-box")
