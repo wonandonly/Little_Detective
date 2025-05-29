@@ -149,7 +149,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
 }
 .header-bar {
     background-color: #d0f0c0;
-    padding: 20px 30px;
+    padding: 4px 4px;
     border-radius: 0 0 16px 16px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -173,7 +173,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     gap: 16px;
 }
 .header-logo {
-    width: 72px;
+    width: 50px;
     height: auto;
     border-radius: 12px;
 }
@@ -182,17 +182,17 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     flex-direction: column;
 }
 .brand-title {
-    font-size: 24px;
+    font-size: 15px;
     font-weight: bold;
     color: #2e7d32;
 }
 .brand-sub {
-    font-size: 15px;
+    font-size: 10px;
     color: #4d774e;
     margin-top: 2px;
 }
 .contact-info {
-    font-size: 14px;
+    font-size: 12px;
     color: #333;
     text-align: right;
     line-height: 1.5;
@@ -439,6 +439,16 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     align-items: center;
     min-height: 630px;
 }
+.tool-section1 {
+    background-color: #ffffff;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100px;
+}
 
 .tool-section h2 {
     font-size: 20px;
@@ -467,6 +477,76 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         white-space: pre-wrap;
         min-height: 100px;
 }
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+.correct-animate {
+  animation: fadeIn 0.8s ease-out;
+  color: green;
+  font-weight: bold;
+}
+
+.wrong-animate {
+  animation: shake 0.5s ease-in-out;
+  color: red;
+  font-weight: bold;
+}
+.correct-animate {
+    animation: pop 0.8s ease-out;
+    font-size: 18px;
+    font-weight: bold;
+    color: green;
+    text-align: center;
+    margin-top: 12px;
+}
+.wrong-animate {
+    animation: shake 0.8s ease-in-out;
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    text-align: center;
+    margin-top: 12px;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+#quiz-yes {
+    background-color: #d0f0c0 !important;  /* 연한 초록 */
+    color: #2e7d32 !important;             /* 진한 초록 텍스트 */
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 10px 20px;
+}
+
+#quiz-no {
+    background-color: #ffe0e0 !important;  /* 연한 빨강 */
+    color: #d32f2f !important;             /* 진한 빨강 텍스트 */
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 10px 20px;
+}
+
+#quiz-yes:hover {
+    background-color: #c8e6c9 !important;
+    transform: scale(1.05);
+    transition: 0.2s ease;
+}
+
+#quiz-no:hover {
+    background-color: #ffcdd2 !important;
+    transform: scale(1.05);
+    transition: 0.2s ease;
+}
+
 
 """) as demo:
 
@@ -484,7 +564,6 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                 </div>
             </div>
             <div class="contact-info">
-                <div><strong>문의:</strong> Kideco@kidsmission.org</div>
                 <div><strong>운영:</strong> 꼬마환경탐정팀</div>
             </div>
             </div>
@@ -542,7 +621,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
 
-                    gr.HTML("<h3>📷 사진을 올려보세요!</h3><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
+                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
                     # 이미지 입력
                     image_input = gr.Image(label="", type="pil")
 
@@ -557,23 +636,43 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     # ✅ 내부적으로 음성 경로 저장할 상태
                     tts_path_state = gr.State()
 
+            with gr.Column(visible=False, elem_id="quiz-section", elem_classes="tool-section1") as quiz_block:
+                gr.HTML("""
+                    <div style="background-color: #fff8e1; border: 2px dashed #fbc02d; border-radius: 16px; padding: 24px; text-align: center;">
+                        <h2 style="color: #f57f17; margin-bottom: 16px;">❓ 미니 퀴즈 타임!</h2>
+                        <p style="font-size: 18px; font-weight: bold; color: #5d4037;">🧠 Q. 종이컵은 종이로 분리수거해야 한다.</p>
+                    </div>
+                """)
+
+                with gr.Row():
+                    mini_quiz_yes = gr.Button("⭕", elem_id="quiz-yes")
+                    mini_quiz_no = gr.Button("❌", elem_id="quiz-no")
+
+                mini_quiz_result = gr.HTML(visible=False)
+
+
+            
+
+        # Gradio 앱 설정
         def good_selected():
             return (
                 gr.update(value="<div style='font-size: 26px; font-weight: bold;'>💡 좋은 생각이야! ☺️ 탐정에게 물어보자!</div>", visible=True),
-                gr.update(visible=True)
+                gr.update(visible=True),
+                gr.update(visible=True)   # quiz_block
             )
 
         def bad_selected():
             return (
                 gr.update(value="<div style='font-size: 26px; font-weight: bold;'>📚 그러면 안 돼! ❌ 😵 분리수거를 같이 배워보자!</div>"),
-                gr.update(visible=True)
+                gr.update(visible=True),
+                gr.update(visible=True)   # quiz_block
             )
 
         good_button = gr.Button(visible=False, elem_id="good-button")
         bad_button = gr.Button(visible=False, elem_id="bad-button")
 
-        good_button.click(fn=good_selected, outputs=[ai_message, tools_row])
-        bad_button.click(fn=bad_selected, outputs=[ai_message, tools_row])
+        good_button.click(fn=good_selected, outputs=[ai_message, tools_row, quiz_block])
+        bad_button.click(fn=bad_selected, outputs=[ai_message, tools_row, quiz_block])
 
         voice_input.change(fn=handle_voice_input, inputs=voice_input, outputs=voice_output)
 
@@ -590,6 +689,45 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
             inputs=tts_path_state,
             outputs=audio_output
         )
+
+
+        # 퀴즈 처리 함수
+ # 출력용
+        mini_quiz_result = gr.HTML(visible=False)
+
+# 퀴즈 처리 함수
+        def handle_mini_quiz(user_choice):
+            correct_answer = "❌"  # 직접 지정
+            if user_choice == correct_answer:
+                return gr.update(value="""
+                    <audio autoplay>
+                        <source src="/static/correct.mp3" type="audio/mpeg">
+                    </audio>
+                    <div class="correct-animate">
+                        🎉 <b>정답이에요!</b><br>종이컵은 일반 쓰레기예요! ♻️
+                    </div>
+                """, visible=True)
+            else:
+                return gr.update(value="""
+                    <audio autoplay>
+                        <source src="/static/wrong.mp3" type="audio/mpeg">
+                    </audio>
+                    <div class="wrong-animate">
+                        😢 <b>틀렸어요!</b><br>종이컵은 코팅 때문에 재활용이 안 돼요!
+                    </div>
+                """, visible=True)
+
+    def handle_quiz_yes():
+        return handle_mini_quiz("⭕")
+
+    def handle_quiz_no():
+        return handle_mini_quiz("❌")
+
+    mini_quiz_yes.click(fn=handle_quiz_yes, outputs=mini_quiz_result)
+    mini_quiz_no.click(fn=handle_quiz_no, outputs=mini_quiz_result)
+
+
+
 
 # Gradio 앱 실행
 app = gr.mount_gradio_app(app, demo, path="/")
