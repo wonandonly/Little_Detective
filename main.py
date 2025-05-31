@@ -45,12 +45,13 @@ def handle_voice_input(audio_path):
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_path) as source:
         audio = recognizer.record(source)
+
     try:
         user_text = recognizer.recognize_google(audio, language="ko-KR")
     except sr.UnknownValueError:
-        return "음성을 인식하지 못했어요. 다시 말씀해 주세요."
+        return "음성을 인식하지 못했어요. 다시 말씀해 주세요.", None
     except sr.RequestError:
-        return "음성 인식 서비스에 문제가 발생했어요."
+        return "음성 인식 서비스에 문제가 발생했어요.", None
 
     response = client.chat.completions.create(
         model="a24-gpt-4o-mini",
@@ -59,13 +60,21 @@ def handle_voice_input(audio_path):
             {"role": "user", "content": user_text}
         ]
     )
+
     answer = response.choices[0].message.content.strip()
-    return f"""
+
+    # ✅ TTS로 음성 파일 생성
+    mp3_path = text_to_speech(answer)
+
+    # ✅ 텍스트와 함께 반환
+    answer_html = f"""
 ### 🔍 탐정의 대답
 <div style="border:1px solid #D8D8DA; border-radius:8px; padding:12px; background-color:#ffffff;">
 {answer}
 </div>
 """
+
+    return answer_html, mp3_path
 
 def classify_and_explain(image):
     image.save("temp.jpg")
@@ -182,12 +191,12 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
     flex-direction: column;
 }
 .brand-title {
-    font-size: 15px;
+    font-size: 20px;
     font-weight: bold;
     color: #2e7d32;
 }
 .brand-sub {
-    font-size: 10px;
+    font-size: 15px;
     color: #4d774e;
     margin-top: 2px;
 }
@@ -616,12 +625,24 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
                     gr.HTML("<h2>🎤 말로 물어보세요!</h2>")
+                    
+                    # 음성 입력
                     voice_input = gr.Microphone(label="", type="filepath")
+                    
+                    # 텍스트 출력
                     voice_output = gr.Markdown(label="", elem_id="answer-box")
+                    
+                    # ✅ 음성 재생 버튼 및 출력
+                    voice_play_button = gr.Button("▶️ 음성 재생")
+                    voice_audio_output = gr.Audio()
+                    
+                    # ✅ mp3 경로 저장용 상태
+                    voice_tts_path_state = gr.State()
+
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
 
-                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><p>사진을 찍을 때는 하나의 물건만 찍어주세요! \n 📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
+                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><p>사진을 찍을 때는 하나의 물건만 찍어주세요!</p><p>📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
                     # 이미지 입력
                     image_input = gr.Image(label="", type="pil")
 
@@ -674,7 +695,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         good_button.click(fn=good_selected, outputs=[ai_message, tools_row, quiz_block])
         bad_button.click(fn=bad_selected, outputs=[ai_message, tools_row, quiz_block])
 
-        voice_input.change(fn=handle_voice_input, inputs=voice_input, outputs=voice_output)
+        #voice_input.change(fn=handle_voice_input, inputs=voice_input, outputs=voice_output)
 
         # 이미지 업로드 시 자동 실행
         image_input.change(
@@ -687,7 +708,21 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         play_button.click(
             fn=lambda path: path,
             inputs=tts_path_state,
-            outputs=audio_output
+            outputs=audio_output,
+        )
+
+        # ✅ 음성 입력 → 응답 텍스트 + mp3 경로 저장
+        voice_input.change(
+            fn=handle_voice_input,
+            inputs=[voice_input],
+            outputs=[voice_output, voice_tts_path_state]
+        )
+
+        # ✅ 음성 재생 버튼 → mp3 경로로 재생
+        voice_play_button.click(
+            fn=lambda path: path,
+            inputs=[voice_tts_path_state],
+            outputs=[voice_audio_output]
         )
 
 
