@@ -783,7 +783,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     <source src="/static/correct.mp3" type="audio/mpeg">
                 </audio>
                 <div class="correct-animate">
-                    🎉 <b>정답이에요!</b><br>종이컵은 일반 쓰레기예요! ♻️
+                    🎉 <b>정답이에요!</b><br>기름이 묻은 종이는 일반쓰레기에 버려주세요! ♻️
                 </div>
             """, visible=True)
         else:
@@ -792,7 +792,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     <source src="/static/wrong.mp3" type="audio/mpeg">
                 </audio>
                 <div class="wrong-animate">
-                    😢 <b>틀렸어요!</b><br>종이컵은 코팅 때문에 재활용이 안 돼요!
+                    😢 <b>틀렸어요!</b><br>기름이 묻은 종이는 종이에 버리면 안 돼요!
                 </div>
             """, visible=True)
 
