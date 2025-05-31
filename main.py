@@ -624,7 +624,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         with gr.Row(visible=False) as tools_row:
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
-                    gr.HTML("<h2>🎤 말로 물어보세요!</h2>")
+                    gr.HTML("<h2>🎤 말로 물어보세요!</h2><p>아래에 있는 [🟠녹음] 버튼을 누르고 분리수거 방법을 물어보세요!</br> 녹음이 끝난 뒤에는 [🟠중지] 버튼을 누르는 것도 잊지 마세요! </p>")
                     
                     # 음성 입력
                     voice_input = gr.Microphone(label="", type="filepath")
@@ -642,7 +642,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
             with gr.Column():
                 with gr.Column(elem_classes="tool-section"):
 
-                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><p>사진을 찍을 때는 하나의 물건만 찍어주세요!</p><p>📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
+                    gr.HTML("<h2>📷 사진을 올려보세요!</h2><p>사진을 찍을 때는 하나의 물건만 찍어주세요!</br>📸 여러 개가 있으면 AI가 헷갈릴 수 있어요.</p>")
                     # 이미지 입력
                     image_input = gr.Image(label="", type="pil")
 
@@ -677,7 +677,7 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         # Gradio 앱 설정
         def good_selected():
             return (
-                gr.update(value="<div style='font-size: 26px; font-weight: bold;'>💡 좋은 생각이야! ☺️ 탐정에게 물어보자!</div>", visible=True),
+                gr.update(value="<div style='font-size: 26px; font-weight: bold;'>💡 좋은 생각이야! ☺️ 탐정에게 분리수거 방법을 물어보자!</div>", visible=True),
                 gr.update(visible=True),
                 gr.update(visible=True)   # quiz_block
             )
