@@ -16,6 +16,8 @@ import tempfile
 from gtts import gTTS
 from playsound import playsound
 import uuid
+import re
+import emoji
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -33,10 +35,15 @@ CUSTOM_VISION_KEY = os.getenv("CUSTOM_VISION_KEY")
 CUSTOM_VISION_PROJECT_ID = os.getenv("CUSTOM_VISION_PROJECT_ID")
 CUSTOM_VISION_ITERATION_NAME = os.getenv("CUSTOM_VISION_ITERATION_NAME")
 
+# 이모지 빼고 tts에 넘겨주는 함수
+def remove_emojis(text):
+    return emoji.replace_emoji(text, replace='')  # 이모지를 공백으로 대체
+
 # tts 기능
 def text_to_speech(text: str):
+    clean_text = remove_emojis(text)
     tmp_path = f"/tmp/{uuid.uuid4().hex}.mp3"
-    tts = gTTS(text, lang='ko')
+    tts = gTTS(clean_text, lang='ko')
     tts.save(tmp_path)
     return tmp_path
 
