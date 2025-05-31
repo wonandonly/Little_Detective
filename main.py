@@ -670,7 +670,21 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                     mini_quiz_no = gr.Button("❌", elem_id="quiz-no")
 
                 mini_quiz_result = gr.HTML(visible=False)
+                
+                gr.HTML("<hr>")
 
+                gr.HTML("""
+                    <div style="background-color: #fff8e1; border: 2px dashed #fbc02d; border-radius: 16px; padding: 24px; text-align: center;">
+                        <h2 style="color: #f57f17; margin-bottom: 16px;">❓ 미니 퀴즈 타임!</h2>
+                        <p style="font-size: 18px; font-weight: bold; color: #5d4037;">🧠 Q. 먹고 남은 치킨 상자는 일반쓰레기로 버려야 한다.</p>
+                    </div>
+                """)
+
+                with gr.Row():
+                    mini_quiz_yes_1 = gr.Button("⭕", elem_id="quiz-yes")
+                    mini_quiz_no_1 = gr.Button("❌", elem_id="quiz-no")
+
+                mini_quiz_result_1 = gr.HTML(visible=False)
 
             
 
@@ -726,9 +740,10 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
         )
 
 
-        # 퀴즈 처리 함수
+# 퀴즈 처리 함수
  # 출력용
-        mini_quiz_result = gr.HTML(visible=False)
+        #mini_quiz_result = gr.HTML(visible=False)
+        #mini_quiz_result_1 = gr.HTML(visible=False)
 
 # 퀴즈 처리 함수
         def handle_mini_quiz(user_choice):
@@ -751,17 +766,46 @@ footer, .svelte-1ipelgc, .wrap.svelte-1ipelgc {
                         😢 <b>틀렸어요!</b><br>종이컵은 코팅 때문에 재활용이 안 돼요!
                     </div>
                 """, visible=True)
+            
+    # 퀴즈 처리 함수
+    def handle_mini_quiz_1(user_choice):
+        correct_answer = "⭕"  # 직접 지정
+        if user_choice == correct_answer:
+            return gr.update(value="""
+                <audio autoplay>
+                    <source src="/static/correct.mp3" type="audio/mpeg">
+                </audio>
+                <div class="correct-animate">
+                    🎉 <b>정답이에요!</b><br>종이컵은 일반 쓰레기예요! ♻️
+                </div>
+            """, visible=True)
+        else:
+            return gr.update(value="""
+                <audio autoplay>
+                    <source src="/static/wrong.mp3" type="audio/mpeg">
+                </audio>
+                <div class="wrong-animate">
+                    😢 <b>틀렸어요!</b><br>종이컵은 코팅 때문에 재활용이 안 돼요!
+                </div>
+            """, visible=True)
+
 
     def handle_quiz_yes():
         return handle_mini_quiz("⭕")
 
     def handle_quiz_no():
         return handle_mini_quiz("❌")
+    
+    def handle_quiz_yes_1():
+        return handle_mini_quiz_1("⭕")
+
+    def handle_quiz_no_1():
+        return handle_mini_quiz_1("❌")
 
     mini_quiz_yes.click(fn=handle_quiz_yes, outputs=mini_quiz_result)
     mini_quiz_no.click(fn=handle_quiz_no, outputs=mini_quiz_result)
-
-
+    mini_quiz_yes_1.click(fn=handle_quiz_yes_1, outputs=mini_quiz_result_1)
+    mini_quiz_no_1.click(fn=handle_quiz_no_1, outputs=mini_quiz_result_1)
 
 
 # Gradio 앱 실행
